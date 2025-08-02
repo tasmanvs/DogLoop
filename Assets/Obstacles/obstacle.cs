@@ -27,6 +27,19 @@ public class obstacle : MonoBehaviour
     {
         if (awaitingInput && currentPlayerCollider != null)
         {
+            if (game_manager.instance == null)
+            {
+                Debug.Log("Game manager instance is null!");
+                return;
+            }
+
+            // Check that player is at correct next door
+            if (!game_manager.instance.CheckCorrectNextObstacle(enteredDoor.gameObject)) {
+                FailObstacle(10);
+                Debug.Log("Incorrect obstacle! Returned to previous position.");
+                return;
+            }
+
             // Listen for arrow key input and build the input string using the new Input System
             if (Keyboard.current.upArrowKey.wasPressedThisFrame) playerInput += "U";
             if (Keyboard.current.downArrowKey.wasPressedThisFrame) playerInput += "D";
@@ -40,23 +53,8 @@ public class obstacle : MonoBehaviour
                 if (playerInput[len - 1] != obstacleWord[len - 1])
                 {
                     // Incorrect input at this step: fail immediately
-                    player playerScript = currentPlayerCollider.GetComponent<player>();
-                    if (playerScript != null)
-                    {
-                        playerScript.ReverseLastMove();
-                    }
-                    
-                    // Apply deduction for incorrect input
-                    ApplyDeduction(5);
-                    
-                    Debug.Log("Incorrect! Returned to previous position.");
-                    // Reset state
-                    awaitingInput = false;
-                    playerInput = "";
-                    currentPlayerCollider = null;
-                    enteredDoor = null;
-                    targetDoor = null;
-                    player.isFrozen = false;
+                    FailObstacle(5);
+                    Debug.Log("Incorrect string! Returned to previous position.");
                     return;
                 }
             }
@@ -66,13 +64,8 @@ public class obstacle : MonoBehaviour
             {
                 currentPlayerCollider.transform.position = targetDoor.transform.position;
                 Debug.Log("Correct! Teleported to the other door.");
-                // Reset state
-                awaitingInput = false;
-                playerInput = "";
-                currentPlayerCollider = null;
-                enteredDoor = null;
-                targetDoor = null;
-                player.isFrozen = false;
+                ResetObstacleState();
+                game_manager.instance.IncrementNextObstacleIndex();
             }
         }
     }
@@ -112,17 +105,30 @@ public class obstacle : MonoBehaviour
             Debug.Log("Enter the obstacle word using arrow keys: " + obstacleWord);
         }
     }
-    
-    private void ApplyDeduction(int amount)
+
+    private void FailObstacle(int deduction)
     {
-        if (game_manager.instance != null)
-        {
-            game_manager.instance.TakeDeduction(amount);
-            Debug.Log($"Applied deduction of {amount} points");
-        }
-        else
-        {
-            Debug.LogWarning("Game manager instance not found! Cannot apply deduction.");
-        }
+        player playerScript = currentPlayerCollider.GetComponent<player>();
+            if (playerScript != null)
+            {
+                playerScript.ReverseLastMove();
+            }
+            
+            // Apply deduction for incorrect input
+            game_manager.instance.TakeDeduction(deduction);
+            
+            ResetObstacleState();
+    }
+    
+    private void ResetObstacleState()
+    {
+        awaitingInput = false;
+        playerInput = "";
+        currentPlayerCollider = null;
+        enteredDoor = null;
+        targetDoor = null;
+        player.isFrozen = false;
+        
+        Debug.Log("Obstacle state reset");
     }
 }

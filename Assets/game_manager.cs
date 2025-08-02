@@ -1,14 +1,19 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class game_manager : MonoBehaviour
 {
     public static game_manager instance;
     private int timer;
     private int deductions;
+    private int nextObstacleIndex;
     
     [Header("UI References")]
     public TextMeshProUGUI scoreText;
+    
+    [Header("Obstacle Door Order")]
+    [SerializeField] private List<GameObject> gameObjects = new List<GameObject>();
 
     private void Awake()
     {
@@ -25,7 +30,7 @@ public class game_manager : MonoBehaviour
     {
         deductions = 0;
         timer = 0;
-        updateScoreText();
+        UpdateScoreText();
         InvokeRepeating("IncrementTimer", 1.0f, 1.0f);
     }
 
@@ -33,7 +38,7 @@ public class game_manager : MonoBehaviour
     {
         deductions = 0;
         timer = 0;
-        updateScoreText();
+        UpdateScoreText();
     }
 
     // Update is called once per frame
@@ -45,16 +50,30 @@ public class game_manager : MonoBehaviour
     public void IncrementTimer()
     {
         timer++;
-        updateScoreText();
+        UpdateScoreText();
     }
 
     public void TakeDeduction(int amount)
     {
         deductions -= amount;
-        updateScoreText();
+        UpdateScoreText();
     }
 
-    private void updateScoreText()
+    public bool CheckCorrectNextObstacle(GameObject obstacle)
+    {
+        if (nextObstacleIndex < gameObjects.Count)
+        {
+            return gameObjects[nextObstacleIndex] == obstacle;
+        }
+        return false;
+    }
+
+    public void IncrementNextObstacleIndex()
+    {
+        nextObstacleIndex++;
+    }
+
+    private void UpdateScoreText()
     {
         scoreText.text = "Time: " + timer.ToString() + "\nDeductions: " + deductions.ToString();
     }
