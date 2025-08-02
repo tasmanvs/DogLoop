@@ -45,6 +45,10 @@ public class obstacle : MonoBehaviour
                     {
                         playerScript.ReverseLastMove();
                     }
+                    
+                    // Apply deduction for incorrect input
+                    ApplyDeduction(5);
+                    
                     Debug.Log("Incorrect! Returned to previous position.");
                     // Reset state
                     awaitingInput = false;
@@ -106,6 +110,19 @@ public class obstacle : MonoBehaviour
             playerInput = "";
             player.isFrozen = true; // Freeze player while awaiting input
             Debug.Log("Enter the obstacle word using arrow keys: " + obstacleWord);
+        }
+    }
+    
+    private void ApplyDeduction(int amount)
+    {
+        if (game_manager.instance != null)
+        {
+            game_manager.instance.TakeDeduction(amount);
+            Debug.Log($"Applied deduction of {amount} points");
+        }
+        else
+        {
+            Debug.LogWarning("Game manager instance not found! Cannot apply deduction.");
         }
     }
 }
