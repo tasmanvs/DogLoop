@@ -77,6 +77,11 @@ public class obstacle : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+
+        // log the trigger event
+        Debug.Log($"Obstacle triggered by: {other.name}");
+
+
         if (!other.CompareTag("Player")) return;
 
         Vector2 playerPos = other.transform.position;
@@ -115,14 +120,26 @@ public class obstacle : MonoBehaviour
         Debug.Log(reason);
         _playerCollider.GetComponent<player>()?.ReverseLastMove();
         game_manager.instance.TakeDeduction(deduction);
-        ResetObstacleState();
+        StartCoroutine(DelayedReset());
     }
 
     private void SucceedObstacle()
     {
         _playerCollider.transform.position = _targetDoor.transform.position;
+
+        // Measure the direction from the start to the end door
+        Vector2 direction = (_targetDoor.transform.position - _enteredDoor.transform.position).normalized;
+        player player_instance = _playerCollider.GetComponent<player>();
+        player_instance.SetLookDirection(direction);
+
         game_manager.instance.IncrementNextObstacleIndex();
         Debug.Log("Correct! Teleported to the other door.");
+        StartCoroutine(DelayedReset());
+    }
+
+    private System.Collections.IEnumerator DelayedReset()
+    {
+        yield return new WaitForEndOfFrame();
         ResetObstacleState();
     }
 

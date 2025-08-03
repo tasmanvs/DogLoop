@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1213033110314428483}
   - component: {fileID: 7179104587694251824}
   m_Layer: 0
-  m_Name: door_b
+  m_Name: weave_pole_right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -277,7 +277,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 1}
+  m_Size: {x: 8, y: 1}
   m_EdgeRadius: 0
 --- !u!1 &8860831764576934583
 GameObject:
@@ -290,7 +290,7 @@ GameObject:
   - component: {fileID: 1926446548228812251}
   - component: {fileID: 917072727211402571}
   m_Layer: 0
-  m_Name: door_a
+  m_Name: weave_pole_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

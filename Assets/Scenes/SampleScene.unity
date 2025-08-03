@@ -455,8 +455,7 @@ MonoBehaviour:
   pastScoresText: {fileID: 478803312}
   obstacleList:
   - {fileID: 1184888051}
-  - {fileID: 258966788}
-  - {fileID: 258966788}
+  - {fileID: 476194803}
   startFinish: {fileID: 1802780937}
   dog: {fileID: 338388456}
   nextObstacleMarker: {fileID: 583084047}
@@ -475,6 +474,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &476194803 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2306759481363905064, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+  m_PrefabInstance: {fileID: 1157476118}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &478803310
 GameObject:
   m_ObjectHideFlags: 0
@@ -1135,6 +1139,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1157476118
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1142656068610005707, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4815996484503618156, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: m_Name
+      value: ObstacleWeave
+      objectReference: {fileID: 0}
+    - target: {fileID: 8235423183491883648, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
+      propertyPath: obstacleWord
+      value: RLRL
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9b00ef7b7f75747178f8a4d47be258d4, type: 3}
 --- !u!1 &1184888051
 GameObject:
   m_ObjectHideFlags: 0
@@ -1295,7 +1360,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1550521874}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: 0.002071584, w: 0.9999979}
   m_LocalPosition: {x: 3, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1304,7 +1369,7 @@ Transform:
   - {fileID: 258966790}
   - {fileID: 2083714898}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.237}
 --- !u!61 &1550521877
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1365,7 +1430,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door_a: {fileID: 1184888052}
   door_b: {fileID: 258966789}
-  obstacleWord: ULRD
+  obstacleWord: LL
 --- !u!1 &1589897117
 GameObject:
   m_ObjectHideFlags: 0
@@ -3672,4 +3737,5 @@ SceneRoots:
   - {fileID: 509065411}
   - {fileID: 450710670}
   - {fileID: 1802780940}
+  - {fileID: 1157476118}
   - {fileID: 583084049}
