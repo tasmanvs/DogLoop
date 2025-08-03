@@ -27,6 +27,9 @@ public class game_manager : MonoBehaviour
     [Header("Player Dog")]
     public GameObject dog;
 
+    [Header("Next Obstacle Marker")]
+    public GameObject nextObstacleMarker;
+
     private void Awake()
     {
         if (instance)
@@ -42,6 +45,7 @@ public class game_manager : MonoBehaviour
     {
         dog.transform.position = startFinish.transform.position;
         roundStarted = false;
+        nextObstacleMarker.SetActive(false);
     }
 
     // Update is called once per frame
@@ -66,6 +70,7 @@ public class game_manager : MonoBehaviour
         }
         CancelInvoke("IncrementTimer");
         roundStarted = false;
+        nextObstacleMarker.SetActive(false);
 
         Debug.Log($"next obstacle index: {nextObstacleIndex}. obstacleList.Count = {obstacleList.Count}");
 
@@ -89,6 +94,8 @@ public class game_manager : MonoBehaviour
         deductions = 0;
         timer = 0;
         UpdateScoreText();
+        nextObstacleMarker.transform.position = NextObstacle().transform.position;
+        nextObstacleMarker.SetActive(true);
     }
 
     public void IncrementTimer()
@@ -121,6 +128,7 @@ public class game_manager : MonoBehaviour
     public void IncrementNextObstacleIndex()
     {
         nextObstacleIndex++;
+        nextObstacleMarker.transform.position = NextObstacle().transform.position;
     }
 
     private void UpdateScoreText()
