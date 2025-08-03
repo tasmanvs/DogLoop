@@ -11,7 +11,6 @@ public class obstacle : MonoBehaviour
 
     private bool awaitingInput = false;
     private string playerInput = "";
-    private Vector2 originalPlayerPosition;
     private Collider2D currentPlayerCollider;
     private BoxCollider2D enteredDoor;
     private BoxCollider2D targetDoor;
@@ -108,30 +107,22 @@ public class obstacle : MonoBehaviour
             playerInput = "";
             player.isFrozen = true; // Freeze player while awaiting input
             Debug.Log("Enter the obstacle word using arrow keys: " + obstacleWord);
-            if (obstacleDisplay != null)
-            {
-                obstacleDisplay.SetCode(obstacleWord);
-                obstacleDisplay.ShowDisplay();
-            }
-            else
-            {
-                Debug.LogWarning("ObstacleDisplay not found!");
-            }
+            obstacleDisplay.SetCode(obstacleWord);
+            obstacleDisplay.ShowDisplay();
         }
     }
 
     private void FailObstacle(int deduction)
     {
         player playerScript = currentPlayerCollider.GetComponent<player>();
-            if (playerScript != null)
-            {
-                playerScript.ReverseLastMove();
-            }
-            
-            // Apply deduction for incorrect input
-            game_manager.instance.TakeDeduction(deduction);
-            if (obstacleDisplay != null) obstacleDisplay.HideDisplay();
-            ResetObstacleState();
+        if (playerScript != null)
+        {
+            playerScript.ReverseLastMove();
+        }
+        // Apply deduction for incorrect input
+        game_manager.instance.TakeDeduction(deduction);
+        obstacleDisplay.HideDisplay();
+        ResetObstacleState();
     }
     
     private void ResetObstacleState()
@@ -142,7 +133,7 @@ public class obstacle : MonoBehaviour
         enteredDoor = null;
         targetDoor = null;
         player.isFrozen = false;
-        if (obstacleDisplay != null) obstacleDisplay.HideDisplay();
+        obstacleDisplay.HideDisplay();
         Debug.Log("Obstacle state reset");
     }
 }
