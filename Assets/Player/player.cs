@@ -31,25 +31,29 @@ public class player : MonoBehaviour
         var keyboard = Keyboard.current;
         if (keyboard != null)
         {
-            if (keyboard.leftArrowKey.wasPressedThisFrame) {
+            if (keyboard.leftArrowKey.wasPressedThisFrame)
+            {
                 move.x -= moveAmount;
                 lastMove = Vector2.left;
                 if (leftSprite != null && spriteRenderer != null)
                     spriteRenderer.sprite = leftSprite;
             }
-            if (keyboard.rightArrowKey.wasPressedThisFrame) {
+            if (keyboard.rightArrowKey.wasPressedThisFrame)
+            {
                 move.x += moveAmount;
                 lastMove = Vector2.right;
                 if (rightSprite != null && spriteRenderer != null)
                     spriteRenderer.sprite = rightSprite;
             }
-            if (keyboard.upArrowKey.wasPressedThisFrame) {
+            if (keyboard.upArrowKey.wasPressedThisFrame)
+            {
                 move.y += moveAmount;
                 lastMove = Vector2.up;
                 if (upSprite != null && spriteRenderer != null)
                     spriteRenderer.sprite = upSprite;
             }
-            if (keyboard.downArrowKey.wasPressedThisFrame) {
+            if (keyboard.downArrowKey.wasPressedThisFrame)
+            {
                 move.y -= moveAmount;
                 lastMove = Vector2.down;
                 if (downSprite != null && spriteRenderer != null)
@@ -65,25 +69,63 @@ public class player : MonoBehaviour
     public void ReverseLastMove()
     {
         // Move in the opposite direction of lastMove and update sprite
-        if (lastMove == Vector2.left) {
+        if (lastMove == Vector2.left)
+        {
             transform.Translate(Vector2.right * moveAmount, Space.World);
             if (rightSprite != null && spriteRenderer != null)
                 spriteRenderer.sprite = rightSprite;
         }
-        else if (lastMove == Vector2.right) {
+        else if (lastMove == Vector2.right)
+        {
             transform.Translate(Vector2.left * moveAmount, Space.World);
             if (leftSprite != null && spriteRenderer != null)
                 spriteRenderer.sprite = leftSprite;
         }
-        else if (lastMove == Vector2.up) {
+        else if (lastMove == Vector2.up)
+        {
             transform.Translate(Vector2.down * moveAmount, Space.World);
             if (downSprite != null && spriteRenderer != null)
                 spriteRenderer.sprite = downSprite;
         }
-        else if (lastMove == Vector2.down) {
+        else if (lastMove == Vector2.down)
+        {
             transform.Translate(Vector2.up * moveAmount, Space.World);
             if (upSprite != null && spriteRenderer != null)
                 spriteRenderer.sprite = upSprite;
+        }
+    }
+    
+    public void SetLookDirection(Vector2 direction)
+    {
+
+        // The direction is continuous, so first round to the nearest cardinal direction
+        if (direction == Vector2.zero) return; // No direction to set
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        {
+            direction = direction.x > 0 ? Vector2.right : Vector2.left;
+        }
+        else
+        {
+            direction = direction.y > 0 ? Vector2.up : Vector2.down;
+        }
+
+        Debug.Log($"Setting look direction to: {direction}");
+
+        if (direction == Vector2.left && leftSprite != null)
+        {
+            spriteRenderer.sprite = leftSprite;
+        }
+        else if (direction == Vector2.right && rightSprite != null)
+        {
+            spriteRenderer.sprite = rightSprite;
+        }
+        else if (direction == Vector2.up && upSprite != null)
+        {
+            spriteRenderer.sprite = upSprite;
+        }
+        else if (direction == Vector2.down && downSprite != null)
+        {
+            spriteRenderer.sprite = downSprite;
         }
     }
 }
