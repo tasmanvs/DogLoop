@@ -1,134 +1,140 @@
-using System.ComponentModel.Design;
 using UnityEngine;
-using UnityEngine.InputSystem; // Add this for the new Input System
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(BoxCollider2D))]
 public class obstacle : MonoBehaviour
 {
-    public BoxCollider2D door_a;
-    public BoxCollider2D door_b;
+    [Header("Configuration")]
+    [SerializeField] private BoxCollider2D door_a;
+    [SerializeField] private BoxCollider2D door_b;
+    [SerializeField] private string obstacleWord = "UDLR";
 
-    public string obstacleWord = "UDLR"; // The word the player must spell to pass through the obstacle
+    private bool _isPlayerInside;
+    private string _playerInput;
+    private Collider2D _playerCollider;
+    private BoxCollider2D _enteredDoor;
+    private BoxCollider2D _targetDoor;
+    private ObstacleDisplay _obstacleDisplay;
 
-    private bool awaitingInput = false;
-    private string playerInput = "";
-    private Vector2 originalPlayerPosition;
-    private Collider2D currentPlayerCollider;
-    private BoxCollider2D enteredDoor;
-    private BoxCollider2D targetDoor;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (awaitingInput && currentPlayerCollider != null)
+        _obstacleDisplay = GetComponentInChildren<ObstacleDisplay>(true);
+        if (_obstacleDisplay == null)
         {
-            if (game_manager.instance == null)
-            {
-                Debug.Log("Game manager instance is null!");
-                return;
-            }
-
-            // Check that player is at correct next door
-            if (!game_manager.instance.CheckCorrectNextObstacle(enteredDoor.gameObject)) {
-                FailObstacle(10);
-                Debug.Log("Incorrect obstacle! Returned to previous position.");
-                return;
-            }
-
-            // Listen for arrow key input and build the input string using the new Input System
-            if (Keyboard.current.upArrowKey.wasPressedThisFrame) playerInput += "U";
-            if (Keyboard.current.downArrowKey.wasPressedThisFrame) playerInput += "D";
-            if (Keyboard.current.leftArrowKey.wasPressedThisFrame) playerInput += "L";
-            if (Keyboard.current.rightArrowKey.wasPressedThisFrame) playerInput += "R";
-
-            // Check for immediate failure
-            int len = playerInput.Length;
-            if (len > 0 && len <= obstacleWord.Length)
-            {
-                if (playerInput[len - 1] != obstacleWord[len - 1])
-                {
-                    // Incorrect input at this step: fail immediately
-                    FailObstacle(5);
-                    Debug.Log("Incorrect string! Returned to previous position.");
-                    return;
-                }
-            }
-
-            // If input is complete and correct, teleport
-            if (playerInput.Length == obstacleWord.Length)
-            {
-                currentPlayerCollider.transform.position = targetDoor.transform.position;
-                Debug.Log("Correct! Teleported to the other door.");
-                ResetObstacleState();
-                game_manager.instance.IncrementNextObstacleIndex();
-            }
+            Debug.LogError("ObstacleDisplay child not found on obstacle: " + gameObject.name);
         }
     }
 
-    void OnTriggerEnter2D(Collider2D player_collider)
+    private void Update()
     {
-        // Print debug message about player_collider.
-        Debug.Log("Obstacle triggered by: " + player_collider.name);
-        // Print the tag
-        Debug.Log("Obstacle triggered by tag: " + player_collider.tag);
-        // Check if the collider belongs to the player
-        if (player_collider.CompareTag("Player"))
-        {
-            Vector2 playerPos = player_collider.transform.position;
-            // Check which door the player is overlapping
-            // And move the xy position to the other door's position
-            if (door_a.OverlapPoint(playerPos))
-            {
-                enteredDoor = door_a;
-                targetDoor = door_b;
-            }
-            else if (door_b.OverlapPoint(playerPos))
-            {
-                enteredDoor = door_b;
-                targetDoor = door_a;
-            }
-            else
-            {
-                return;
-            }
+        if (!_isPlayerInside) return;
 
-            // No need to store previousPosition from player script anymore
-            currentPlayerCollider = player_collider;
-            awaitingInput = true;
-            playerInput = "";
-            player.isFrozen = true; // Freeze player while awaiting input
-            Debug.Log("Enter the obstacle word using arrow keys: " + obstacleWord);
+        HandleObstacleInput();
+    }
+
+    private void HandleObstacleInput()
+    {
+        if (game_manager.instance == null)
+        {
+            Debug.LogError("Game manager instance is null!");
+            return;
+        }
+
+        if (!game_manager.instance.CheckCorrectNextObstacle(_enteredDoor.gameObject))
+        {
+            FailObstacle(10, "Incorrect obstacle! Returned to previous position.");
+            return;
+        }
+
+        ProcessPlayerInput();
+    }
+
+    private void ProcessPlayerInput()
+    {
+        char keyPressed = '\0';
+        if (Keyboard.current.upArrowKey.wasPressedThisFrame) keyPressed = 'U';
+        else if (Keyboard.current.downArrowKey.wasPressedThisFrame) keyPressed = 'D';
+        else if (Keyboard.current.leftArrowKey.wasPressedThisFrame) keyPressed = 'L';
+        else if (Keyboard.current.rightArrowKey.wasPressedThisFrame) keyPressed = 'R';
+
+        if (keyPressed == '\0') return;
+
+        if (_playerInput.Length < obstacleWord.Length && obstacleWord[_playerInput.Length] == keyPressed)
+        {
+            _obstacleDisplay.OnCorrectInput(_playerInput.Length);
+            _playerInput += keyPressed;
+
+            if (_playerInput.Length == obstacleWord.Length)
+            {
+                SucceedObstacle();
+            }
+        }
+        else
+        {
+            FailObstacle(5, "Incorrect key! Returned to previous position.");
         }
     }
 
-    private void FailObstacle(int deduction)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        player playerScript = currentPlayerCollider.GetComponent<player>();
-            if (playerScript != null)
-            {
-                playerScript.ReverseLastMove();
-            }
-            
-            // Apply deduction for incorrect input
-            game_manager.instance.TakeDeduction(deduction);
-            
-            ResetObstacleState();
+        if (!other.CompareTag("Player")) return;
+
+        Vector2 playerPos = other.transform.position;
+        if (door_a.OverlapPoint(playerPos))
+        {
+            _enteredDoor = door_a;
+            _targetDoor = door_b;
+        }
+        else if (door_b.OverlapPoint(playerPos))
+        {
+            _enteredDoor = door_b;
+            _targetDoor = door_a;
+        }
+        else
+        {
+            return;
+        }
+
+        StartObstacle(other);
     }
-    
+
+    private void StartObstacle(Collider2D playerCollider)
+    {
+        _playerCollider = playerCollider;
+        _isPlayerInside = true;
+        _playerInput = "";
+        player.isFrozen = true;
+
+        _obstacleDisplay.SetCode(obstacleWord);
+        _obstacleDisplay.ShowDisplay();
+        Debug.Log("Enter the obstacle word using arrow keys: " + obstacleWord);
+    }
+
+    private void FailObstacle(int deduction, string reason)
+    {
+        Debug.Log(reason);
+        _playerCollider.GetComponent<player>()?.ReverseLastMove();
+        game_manager.instance.TakeDeduction(deduction);
+        ResetObstacleState();
+    }
+
+    private void SucceedObstacle()
+    {
+        _playerCollider.transform.position = _targetDoor.transform.position;
+        game_manager.instance.IncrementNextObstacleIndex();
+        Debug.Log("Correct! Teleported to the other door.");
+        ResetObstacleState();
+    }
+
     private void ResetObstacleState()
     {
-        awaitingInput = false;
-        playerInput = "";
-        currentPlayerCollider = null;
-        enteredDoor = null;
-        targetDoor = null;
+        _isPlayerInside = false;
+        _playerInput = "";
+        _playerCollider = null;
+        _enteredDoor = null;
+        _targetDoor = null;
         player.isFrozen = false;
-        
-        Debug.Log("Obstacle state reset");
+        _obstacleDisplay.HideDisplay();
+        Debug.Log("Obstacle state reset.");
     }
 }
