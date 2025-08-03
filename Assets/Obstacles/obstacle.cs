@@ -47,28 +47,32 @@ public class obstacle : MonoBehaviour
         }
 
         ProcessPlayerInput();
+    }
 
-        if (_playerInput.Length > 0)
+    private void ProcessPlayerInput()
+    {
+        char keyPressed = '\0';
+        if (Keyboard.current.upArrowKey.wasPressedThisFrame) keyPressed = 'U';
+        else if (Keyboard.current.downArrowKey.wasPressedThisFrame) keyPressed = 'D';
+        else if (Keyboard.current.leftArrowKey.wasPressedThisFrame) keyPressed = 'L';
+        else if (Keyboard.current.rightArrowKey.wasPressedThisFrame) keyPressed = 'R';
+
+        if (keyPressed == '\0') return;
+
+        if (_playerInput.Length < obstacleWord.Length && obstacleWord[_playerInput.Length] == keyPressed)
         {
-            if (!obstacleWord.StartsWith(_playerInput))
-            {
-                FailObstacle(5, "Incorrect string! Returned to previous position.");
-                return;
-            }
+            _obstacleDisplay.OnCorrectInput(_playerInput.Length);
+            _playerInput += keyPressed;
 
             if (_playerInput.Length == obstacleWord.Length)
             {
                 SucceedObstacle();
             }
         }
-    }
-
-    private void ProcessPlayerInput()
-    {
-        if (Keyboard.current.upArrowKey.wasPressedThisFrame) _playerInput += "U";
-        if (Keyboard.current.downArrowKey.wasPressedThisFrame) _playerInput += "D";
-        if (Keyboard.current.leftArrowKey.wasPressedThisFrame) _playerInput += "L";
-        if (Keyboard.current.rightArrowKey.wasPressedThisFrame) _playerInput += "R";
+        else
+        {
+            FailObstacle(5, "Incorrect key! Returned to previous position.");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
