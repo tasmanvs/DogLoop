@@ -452,7 +452,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreText: {fileID: 615078378}
-  prevScoresText: {fileID: 478803312}
+  pastScoresText: {fileID: 478803312}
   obstacleList:
   - {fileID: 1184888051}
   - {fileID: 258966788}
