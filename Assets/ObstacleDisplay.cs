@@ -1,72 +1,54 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ObstacleDisplay : MonoBehaviour
 {
+    [Header("Arrow Sprites")]
     public Sprite upArrowSprite;
     public Sprite downArrowSprite;
     public Sprite leftArrowSprite;
     public Sprite rightArrowSprite;
 
-    private string currentCode = "";
-    private GameObject[] arrowObjects = null;
+    private readonly Dictionary<char, Sprite> _arrowSpriteMap = new Dictionary<char, Sprite>();
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
+        _arrowSpriteMap['U'] = upArrowSprite;
+        _arrowSpriteMap['D'] = downArrowSprite;
+        _arrowSpriteMap['L'] = leftArrowSprite;
+        _arrowSpriteMap['R'] = rightArrowSprite;
+        
         HideDisplay();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     public void SetCode(string code)
     {
-        currentCode = code;
-        UpdateDisplay();
+        UpdateDisplay(code);
     }
 
-    public void ShowDisplay()
-    {
-        gameObject.SetActive(true);
-        Debug.Log("ObstacleDisplay: ShowDisplay called with code: " + currentCode);
-    }
+    public void ShowDisplay() => gameObject.SetActive(true);
 
-    public void HideDisplay()
-    {
-        gameObject.SetActive(false);
-    }
+    public void HideDisplay() => gameObject.SetActive(false);
 
-    private void UpdateDisplay()
+    private void UpdateDisplay(string code)
     {
-        // Destroy old arrows
-        if (arrowObjects != null)
+        // Clear existing arrows
+        foreach (Transform child in transform)
         {
-            foreach (var obj in arrowObjects)
-            {
-                if (obj != null) Destroy(obj);
-            }
+            Destroy(child.gameObject);
         }
-        arrowObjects = new GameObject[currentCode.Length];
 
-        // Create new arrows as child GameObjects with SpriteRenderer
-        for (int i = 0; i < currentCode.Length; i++)
+        // Create new arrows
+        for (int i = 0; i < code.Length; i++)
         {
-            GameObject arrow = new GameObject("Arrow_" + i);
+            if (!_arrowSpriteMap.TryGetValue(code[i], out Sprite sprite)) continue;
+
+            var arrow = new GameObject("Arrow_" + i);
             arrow.transform.SetParent(transform);
-            arrow.transform.localPosition = new Vector3(i * 1.1f, 0, 0); // space arrows horizontally
+            arrow.transform.localPosition = new Vector3(i * 1.1f, 0, 0); // Space arrows horizontally
+            
             var sr = arrow.AddComponent<SpriteRenderer>();
-            switch (currentCode[i])
-            {
-                case 'U': sr.sprite = upArrowSprite; break;
-                case 'D': sr.sprite = downArrowSprite; break;
-                case 'L': sr.sprite = leftArrowSprite; break;
-                case 'R': sr.sprite = rightArrowSprite; break;
-                default: sr.sprite = null; break;
-            }
-            arrowObjects[i] = arrow;
+            sr.sprite = sprite;
         }
     }
 }
