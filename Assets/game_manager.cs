@@ -9,12 +9,17 @@ public class game_manager : MonoBehaviour
     private int deductions;
     private int nextObstacleIndex;
     private bool roundStarted;
+
+    private int bestScore = int.MaxValue;
     
-    [Header("UI References")]
+    [Header("Current Score Text")]
     public TextMeshProUGUI scoreText;
+
+    [Header("Previous Scores Text")]
+    public TextMeshProUGUI pastScoresText;
     
     [Header("Obstacle Door Order")]
-    [SerializeField] private List<GameObject> gameObjects = new List<GameObject>();
+    [SerializeField] private List<GameObject> obstacleList = new List<GameObject>();
 
     [Header("Start-Finish")]
     public GameObject startFinish;
@@ -54,11 +59,28 @@ public class game_manager : MonoBehaviour
 
     public void StopRound()
     {
-        if(roundStarted)
+        if(!roundStarted)
         {
-            CancelInvoke("IncrementTimer");
-            roundStarted = false;
+            Debug.LogWarning("StopRound called but round was never started");
+            return;
         }
+        CancelInvoke("IncrementTimer");
+        roundStarted = false;
+
+        Debug.Log($"next obstacle index: {nextObstacleIndex}. obstacleList.Count = {obstacleList.Count}");
+
+        if(nextObstacleIndex < obstacleList.Count)
+        {
+            scoreText.text = "Not all obstacles completed!\nDISQUALIFIED";
+            return;
+        }
+
+        int finalScore = timer + deductions;
+        if (bestScore > finalScore) {
+            bestScore = finalScore;
+        }
+        scoreText.text = $"{timer}s + {deductions} deductions\n Final Score: {finalScore}";
+        pastScoresText.text = $"Last Round: {finalScore}\nBest Score: {bestScore}";
     }
 
     public void ResetGame()
@@ -89,9 +111,9 @@ public class game_manager : MonoBehaviour
 
     public GameObject NextObstacle()
     {
-        if (nextObstacleIndex < gameObjects.Count)
+        if (nextObstacleIndex < obstacleList.Count)
         {
-            return gameObjects[nextObstacleIndex];
+            return obstacleList[nextObstacleIndex];
         }
         return startFinish;
     }
@@ -103,6 +125,6 @@ public class game_manager : MonoBehaviour
 
     private void UpdateScoreText()
     {
-        scoreText.text = "Time: " + timer.ToString() + "\nDeductions: " + deductions.ToString();
+        scoreText.text = $"Time: {timer}\nDeductions: {deductions}";
     }
 }
