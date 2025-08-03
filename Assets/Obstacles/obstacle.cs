@@ -15,11 +15,16 @@ public class obstacle : MonoBehaviour
     private Collider2D currentPlayerCollider;
     private BoxCollider2D enteredDoor;
     private BoxCollider2D targetDoor;
+    private ObstacleDisplay obstacleDisplay;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        obstacleDisplay = GetComponentInChildren<ObstacleDisplay>(true);
+        if (obstacleDisplay == null)
+        {
+            Debug.LogWarning("ObstacleDisplay child not found on obstacle: " + gameObject.name);
+        }
     }
 
     // Update is called once per frame
@@ -103,6 +108,15 @@ public class obstacle : MonoBehaviour
             playerInput = "";
             player.isFrozen = true; // Freeze player while awaiting input
             Debug.Log("Enter the obstacle word using arrow keys: " + obstacleWord);
+            if (obstacleDisplay != null)
+            {
+                obstacleDisplay.SetCode(obstacleWord);
+                obstacleDisplay.ShowDisplay();
+            }
+            else
+            {
+                Debug.LogWarning("ObstacleDisplay not found!");
+            }
         }
     }
 
@@ -116,7 +130,7 @@ public class obstacle : MonoBehaviour
             
             // Apply deduction for incorrect input
             game_manager.instance.TakeDeduction(deduction);
-            
+            if (obstacleDisplay != null) obstacleDisplay.HideDisplay();
             ResetObstacleState();
     }
     
@@ -128,7 +142,7 @@ public class obstacle : MonoBehaviour
         enteredDoor = null;
         targetDoor = null;
         player.isFrozen = false;
-        
+        if (obstacleDisplay != null) obstacleDisplay.HideDisplay();
         Debug.Log("Obstacle state reset");
     }
 }
